@@ -1,0 +1,7 @@
+streamlit==1.41.0
+audio-recorder-streamlit==0.0.10
+deepgram-sdk==6.1.1
+crewai==0.32.1
+groq==0.9.0
+langchain-groq==0.1.12
+python-dotenv==1.1.1
