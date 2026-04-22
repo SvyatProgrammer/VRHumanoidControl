@@ -2,12 +2,11 @@ import requests
 import json
 
 def transcribe_with_diarization(audio_path, api_key):
-    # Официальный эндпоинт Deepgram API v1
     url = "https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&diarize=true&language=ru"
     
     headers = {
         "Authorization": f"Token {api_key}",
-        "Content-Type": "audio/wav" # Deepgram сам определит формат, если это mp3 или m4a
+        "Content-Type": "audio/wav"  
     }
 
     with open(audio_path, "rb") as audio_file:
@@ -20,12 +19,10 @@ def transcribe_with_diarization(audio_path, api_key):
     formatted_dialogue = []
 
     try:
-        # Извлекаем параграфы (лучший формат для диаризации)
         paragraphs = data["results"]["channels"][0]["alternatives"][0]["paragraphs"]["transcript_data"]
         for p in paragraphs:
             formatted_dialogue.append((p["speaker"], p["text"]))
     except KeyError:
-        # Если параграфы не создались, собираем по словам (fallback)
         words = data["results"]["channels"][0]["alternatives"][0]["words"]
         if words:
             current_speaker = words[0]["speaker"]

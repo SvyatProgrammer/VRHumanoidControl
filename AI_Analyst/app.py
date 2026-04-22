@@ -46,7 +46,6 @@ if dg_key and q_key:
                     for i, (speaker, text) in enumerate(dialogue):
                         emo = emo_results[i] if i < len(emo_results) else {}
                         
-                        # КРИТЕРИИ ПРОБЛЕМНОСТИ
                         is_toxic = emo.get('hostility', 0) > 35
                         is_illogical = emo.get('logic', 100) < 70
                         is_weird = emo.get('adequacy', 100) < 50
@@ -54,19 +53,16 @@ if dg_key and q_key:
                         
                         avatar = "👨‍💻" if speaker == 0 else "👤"
                         with st.chat_message(f"Speaker {speaker}", avatar=avatar):
-                            # Выводим предупреждения, если они есть
                             if is_toxic: st.error(f"⚠️ Агрессия/Сарказм: {emo.get('summary')}")
                             if is_weird: st.warning(f"🧐 Неадекватность: {emo.get('summary')}")
                             
                             st.write(f"{text}")
                             
-                            # ВЫВОДИМ СТАТЫ ТОЛЬКО ДЛЯ ПРОБЛЕМНЫХ МЕСТ
                             if is_toxic or is_illogical or is_weird or is_not_serious:
                                 st.caption(f"🛡️ **Анализ отклонения:** Логика {emo.get('logic')}% | Серьезность {emo.get('seriousness')}% | Давление {emo.get('pressure')}%")
 
                 with tab_metrics:
                     if len(emo_results) > 0:
-                        # Исправление ошибки Pydantic/Pandas: явно указываем индекс
                         df = pd.DataFrame(emo_results)
                         
                         avg_adeq = df['adequacy'].mean()

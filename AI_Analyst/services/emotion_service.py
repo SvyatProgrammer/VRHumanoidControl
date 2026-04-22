@@ -5,12 +5,10 @@ import re
 def analyze_emotions(dialogue_list, groq_api):
     client = Groq(api_key=groq_api)
     
-    # Объединяем диалог для контекстного анализа
     formatted_dialogue = ""
     for i, (speaker, text) in enumerate(dialogue_list):
         formatted_dialogue += f"[{i}] Спикер {speaker}: {text}\n"
 
-    # Промпт, основанный на техниках бизнес-профайлинга
     prompt = f"""
     Ты - эксперт-лингвист и бизнес-профайлер. Твоя задача - провести глубокий психологический анализ диалога.
     Для каждого сообщения [{len(dialogue_list)} шт] выстави оценки от 0 до 100 по следующим критериям:
@@ -51,7 +49,6 @@ def analyze_emotions(dialogue_list, groq_api):
         )
 
         content = response.choices[0].message.content
-        # Очистка от возможных markdown-тегов
         json_match = re.search(r'\[.*\]', content, re.DOTALL)
         return json.loads(json_match.group(0)) if json_match else json.loads(content)
     except Exception as e:
