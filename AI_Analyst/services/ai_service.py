@@ -2,41 +2,41 @@ from crewai import Agent, Task, Crew, LLM
 import os
 
 def run_analysis(dialogue_list, groq_api):
-    if not dialogue_list:
-        return "❌ Ошибка: диалог пуст. Нечего анализировать."
-    
     os.environ["GROQ_API_KEY"] = groq_api
     my_model = LLM(model="groq/llama-3.3-70b-versatile", api_key=groq_api)
-    
     full_text = "\n".join([f"Спикер {s}: {t}" for s, t in dialogue_list])
 
-    analyst = Agent(
-        role='Бизнес-профайлер',
-        goal='Сделать выжимку из бизнес-требований.',
-        backstory='Ты аналитик, который вытягивает суть из хаоса переговоров.',
-        llm=my_model,
-        allow_delegation=False
+    auditor = Agent(
+        role='Технический аудитор',
+        goal='Выявить предмет обсуждения и сопоставить требования с реальностью.',
+        backstory='Ты эксперт по оценке сложности проектов. Ты отсекаешь лишнее и оставляешь только факты.',
+        llm=my_model
     )
 
-    architect = Agent(
-        role='Системный аналитик',
-        goal='Составить подробное техническое задание.',
-        backstory='Ты мастер структурирования ТЗ.',
-        llm=my_model,
-        allow_delegation=False
+    consultant = Agent(
+        role='Бизнес-консультант',
+        goal='Оценить коммерческую надежность заказчика и риски сотрудничества.',
+        backstory='Ты опытный переговорщик, который видит скрытые угрозы и нереалистичные схемы.',
+        llm=my_model
     )
 
     t1 = Task(
-        description=f"Проанализируй диалог: \n{full_text}\n и составь отчет о целях клиента.",
-        agent=analyst,
-        expected_output="Бизнес-цели проекта."
+        description=f"Определи тему и выдели основные требования из текста: \n{full_text}",
+        agent=auditor,
+        expected_output="Тема разговора и список требований."
     )
 
     t2 = Task(
-        description=f"На основе диалога: \n{full_text}\n разработай структуру ТЗ (стек, функции).",
-        agent=architect,
-        expected_output="Готовое ТЗ в формате Markdown."
+        description="Проверь требования на реализуемость и найди логические противоречия.",
+        agent=auditor,
+        expected_output="Технический разбор реальности требований."
     )
 
-    crew = Crew(agents=[analyst, architect], tasks=[t1, t2])
+    t3 = Task(
+        description="Оцени надежность заказчика и дай итоговый вердикт: стоит ли работать с ним.",
+        agent=consultant,
+        expected_output="Бизнес-рекомендация в формате Markdown."
+    )
+
+    crew = Crew(agents=[auditor, consultant], tasks=[t1, t2, t3])
     return crew.kickoff()

@@ -3,7 +3,6 @@ import json
 
 def transcribe_with_diarization(audio_path, api_key):
     url = "https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&diarize=true&language=ru"
-    
     headers = {
         "Authorization": f"Token {api_key}",
         "Content-Type": "audio/wav"  
@@ -13,7 +12,7 @@ def transcribe_with_diarization(audio_path, api_key):
         response = requests.post(url, headers=headers, data=audio_file)
 
     if response.status_code != 200:
-        raise Exception(f"Deepgram API Error: {response.status_code} - {response.text}")
+        raise Exception(f"Deepgram API Error: {response.status_code}")
 
     data = response.json()
     formatted_dialogue = []
