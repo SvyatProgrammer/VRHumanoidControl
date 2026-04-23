@@ -6,3 +6,4 @@ audio-recorder-streamlit
 crewai
 groq
 requests
+litellm
