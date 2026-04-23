@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+python-dotenv
+audio-recorder-streamlit
+crewai
+groq
+requests
